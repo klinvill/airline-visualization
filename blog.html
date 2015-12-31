@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>All Tech Considered</title>
+
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="resources/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Custom airline visualization styles -->
+    <link href="airline_visualization_styles.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="#">Home</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-sm-9 blog-main">
+
+          <div class="blog-header">
+            <h1 class="blog-title">All Tech Considered</h1>
+            <p class="lead blog-description">Kirby's adventures and misadventures in the tech world.</p>
+          </div>
+
+          <article class="blog-post">
+            <header>
+              <h2 class="blog-post-title">Visualizing Airline Routes</h2>
+              <time pubdate datetime="2015-06-05" class="blog-post-meta">June 5, 2015</time>
+            </header>
+            <section class="blog-post-body">
+              <br/>
+              <h3>The Goal: Find an Airline to Fly With</h3>
+              <p>This June I'll be graduating from Santa Clara University and transitioning into the workforce as a Big Data Analytics Consultant for <a href="http://www.teradata.com/">Teradata</a>. Consulting tends to involve a lot of travelling so it's often smart to select an airline to fly with in order to accumulate rewards points and status. A major consideration when choosing an airline is the number of non-stop flights an airline offers from the closest airport so, when a data science class I took at Santa Clara University tasked me with creating a data visualization blog post, I decided to create a visualization showing the routes flown by airlines in the United States by airport.</p>
+
+              <br/>
+              <h3>The Data: Bureau of Transportation Statistics' Airline On-Time Performance Data</h3>
+              <p>The data for the visualization was taken from the Bureau of Transportation Statistics' (BTS) <a href="http://www.transtats.bts.gov/Tables.asp?DB_ID=120&DB_Name=Airline%20On-Time%20Performance%20Data&DB_Short_Name=On-Time">Airline On-Time Performance Data</a>. BTS collects monthly data from all carriers making at least one-percent of the total scheduled domestic passenger revenue. Like most datasets, the airline data collected by BTS has its own quirks and needs to be processed before it can be useful.</p> 
+
+              <br/>
+              <h4>Special Quirk: Regional Airlines</h4>
+              <br/>
+              <img src="resources/Unique_Airlines.jpg" height="125">
+              <br/><br/>
+              <p>If you look at airline data from BTS, such as that displayed above, you'll see records of airlines you've probably never heard of. These are likely regional carriers. Interestingly enough, many major airlines sell flights from regional carriers under the major airline brand. To add to the confusion, regional airlines are sometimes contracted out with multiple airlines. For instance, the regional carrier ExpressJet carries out flights for American, United, and Delta. Fortunately, the folks over at fivethirtyeight figured out <a href="http://fivethirtyeight.com/features/how-we-found-the-fastest-flights/">how to assign the regional flights</a> (who you're actually flying with) to the major carriers (who you think you're flying with) based on the regional carrier and the flight number. These changes do a good job of adjusting the data so that it makes sense to we the consumers who only purchase tickets from the major airline. Even with these adjustments, it's quite possible that the visualization misses routes flown by small carriers on the behalf of a major airline since the Bureau only collects data from airlines making at least one-percent of the total scheduled domestic passenger revenue.</p>
+
+              <p>In addition to using the regional flights mentioned above, American Airlines is in the middle of a merger with US Airways. I chose to assign all of US Airways' flights to American Airlines since they have merged their rewards programs. Despite the merged rewards program, US Airways and American Airlines are still operating as separate airlines under a single rewards program. If you were more concerned with which airline to book a flight on rather than which airline to fly with long term, you would likely keep the US Airways and American Airlines flights separate.</p>
+
+              <br/>
+              <h4>Data Compression</h4>
+              <p>The visualization I made uses the <a href="d3js.org">D3 JavaScript library</a> to create a dynamic visualization. This visualization has to load and process the data every time it runs so we can get drastic performance increases by compressing the data down to the few components we actually care about. For this visualization, I only cared about the origin and destination airports (in the 50 United States), the airline, and the number of flights by airline for each route. I also needed lookup data for the location and names of each airport as well as the names of each airline. I found Python and IPython Notebook very useful for the cleaning and compression.</p> 
+
+              <br/>
+              <h3>Building the Visualization</h3>
+              <p>The most time consuming part of building the visualization was familiarizing myself with how D3 works. It's a remarkably simple and easy to use library that allows for a lot of sophisticated functionality. The visualization itself is composed of two different Scalable Vector Graphics (SVGs). One SVG contains the map showing routes per airline by origin airport while the second SVG contains a bar graph quantifying the flights per airline by origin airport. The map is created by drawing layers onto the SVG. The first layer consists of the map of the United States and is created using topojson. The flight paths are drawn on top of the country layer and the airports are drawn on top of the flight paths. The bar chart is simpler than the map and is simply composed of offset text and rectangles.</p>
+
+              <p>Logic has to be added to the basic elements once they've been created. For this visualization, we need the number of flights per airline per airport. D3 provides a csv function that allows us to conveniently load a csv file and execute a function on each its rows. Once we've loaded the required data, we simply need to attach the control elements (the radio buttons) to both the map and the bar chart. HTML 5 introduced a convenient method of storing data within an element tag using the convention data-foo where foo is a descriptive name for the data. Each of the bars in the bar chart and the routes on the map are given relevant data fields. The bars each have a data field corresponding to the airline each bar is associated with. The routes have data fields for both the airports they are associated with and the airlines they are associated with. Each route can have more than one airline associated with it. Adding the data to the path and bar elements means that anytime the selected airline is changed, it is easy to access the specific paths and bar associated with the airline and airport.</p>
+
+
+
+              <br/>
+              <h3>The Final Product</h3>
+              <p>The visualization in this post was adapted from <a href="http://mbostock.github.io/d3/talk/20111116/airports.html">one of Mike Bostock's examples</a> using the JavaScript library <a href="d3js.org">D3</a> and was influenced by fivethirtyeight's <a href="http://fivethirtyeight.com/interactives/flights/">"Which Flight Will Get You There Fastest"</a>. If the visualization is a little too small, you can access an expanded version <a href="airline_visualization.html">here</a>.</p>
+            </section>
+            <section>
+              <h2> <span></span> <br> Airline Visualization </h2>
+              <svg id="airline_visualization" width="700" height="500"></svg>
+              <form class="key"></form>
+              <svg id="airline_bar_chart" width = "700" height = "400"></svg>
+            </section>
+          </article>
+
+          <nav>
+            <ul class="pager">
+              <li><a href="#">Previous</a></li>
+              <li><a href="#">Next</a></li>
+            </ul>
+          </nav>
+
+        </div><!-- /.blog-main -->
+
+        <div class="col-sm-3 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About Me</h4><hr/>
+            <img src="resources/kirby.jpg" class="img-responsive col-sm-6 img-circle" id="profile_picture" alt="Picture of Kirby">
+            <p>Kirby Linvill is studying Computer Science and Engineering at Santa Clara University in the Silicon Valley. He will be graduating soon and moving on to work as a Big Data Analytics Consultant for Teradata. He loves programming, prototyping, and solving problems. His areas of interest include machine learning and data science.</p>
+          </div>
+          <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+              <li><a href="airline_visualization.html">Airline Visualization</a></li>
+            </ol>
+          </div>
+          <div class="sidebar-module">
+            <h4>Elsewhere</h4>
+            <ol class="list-unstyled">
+              <li><a href="https://github.com/klinvill">GitHub</a></li>
+              <li><a href="https://www.linkedin.com/in/kirbylinvill">LinkedIn</a></li>
+            </ol>
+          </div>
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+    <script src="resources/jquery-2.1.4.min.js"></script>
+    <script src="resources/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="resources/ie10-viewport-bug-workaround.js"></script>
+    <script> console.log("%cTODO: Put in dates for blog post", "color: orange;");</script>
+
+    <!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>-->
+    <script src="resources/d3/d3.min.js"></script>
+    <script src="resources/topojson.min.js"></script>
+
+    <script type="text/javascript" src="airline_visualization.js"></script>
+  </body>
+</html>
