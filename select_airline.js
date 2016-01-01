@@ -22,7 +22,8 @@ d3.csv("key_airlines.csv", function (airlines) {
     entry.append("input")
         .attr("type", "radio")
         .attr("name", "airline")
-        .attr("value", "");
+        .attr("value", "")
+        .attr("checked", "checked");
     entry.append("label").text("None");
     entry.append("br");
 

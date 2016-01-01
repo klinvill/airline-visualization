@@ -75,19 +75,28 @@ function attach_airport_handlers() {
             magnify_airport(this);
             show_routes_from(d.AIRPORT);
 
-            d3.selectAll("[data-airport='"+d.AIRPORT+"'] .arc")
+            //d3.selectAll("[data-airport='"+d.AIRPORT+"'] .arc")
+            //    .attr("class", highlight_airline);
+            d3.selectAll("[data-src-airport='"+d.AIRPORT+"'] .arc")
                 .attr("class", highlight_airline);
         })
         .on("mouseout", function (d, i) {
             unmagnify_airport(this);
             if (d.AIRPORT != selected_airport) {
                 hide_routes_from(d.AIRPORT);
+                d3.selectAll("[data-src-airport='"+d.AIRPORT+"'] .arc")
+                    .attr("class", unhighlight_airline);
             }
         })
 
         .on("click", function (d, i) {
             hide_routes_from(selected_airport);
+            d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
+                .attr("class", unhighlight_airline);
+
             selected_airport = d.AIRPORT;
+            d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
+                .attr("class", highlight_airline);
             show_routes_from(d.AIRPORT);
             d3.select("#selected_airport_name").text(d.DISPLAY_AIRPORT_NAME);
 
@@ -103,7 +112,7 @@ function attach_airline_handlers() {
     var airline_selector = d3.selectAll(".key input");
     
     airline_selector.on("click", function(d, i) {
-        selected_airport = d3.select("#routes").attr("data-selected");
+        //selected_airport = d3.select("#routes").attr("data-selected");
 
         // resets the highlighting
         //d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc").attr("class", "arc");
