@@ -3,6 +3,10 @@
   float: left;
 }
 
+#airline_bar_chart {
+  padding-left: 50px;
+}
+
 g.arcs {
   pointer-events: none;
   fill: none;

@@ -102,6 +102,9 @@ function attach_airport_handlers() {
 
             // The currently selected airport code is stored so that it can be easily accessed to only change the color of the highlighted routes
             d3.select("#routes").attr("data-selected", d.AIRPORT);
+
+            // TODO: Dependent on flight_count.js
+            graphCountsByAirline(d.AIRPORT);
         })
     ;
 }

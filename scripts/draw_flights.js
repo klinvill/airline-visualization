@@ -8,12 +8,67 @@ var arc = d3.geo.greatArc()
     .source(function(d) { return locationByAirport[d.source]; })
     .target(function(d) { return locationByAirport[d.target]; });
 
+var flightCounts = new Map();
+
+function buildFlightCount (flight, currentFlightCounts) {
+    var origin = flight.ORIGIN;
+    var destination = flight.DEST;
+    var airline = flight.UNIQUE_CARRIER;
+    var num_flights = parseInt(flight.FLIGHTS, 10);
+
+
+    if (currentFlightCounts.has(origin)) {
+        var countByAirport = currentFlightCounts.get(origin);
+        var currentCount;
+
+        if (countByAirport.has(airline)) {
+            currentCount = countByAirport.get(airline);
+        } else {
+            currentCount = 0;
+        }
+
+        currentFlightCounts.get(origin).set(airline, currentCount + num_flights);
+    
+    } else {
+        currentFlightCounts.set(origin, new Map([[airline, num_flights]]));
+    }
+
+
+    if (currentFlightCounts.has(destination)) {
+        var countByAirport = currentFlightCounts.get(destination);
+        var currentCount;
+
+        if (countByAirport.has(airline)) {
+            currentCount = countByAirport.get(airline);
+        } else {
+            currentCount = 0;
+        }
+
+        currentFlightCounts.get(destination).set(airline, currentCount + num_flights);
+    
+    } else {
+        currentFlightCounts.set(destination, new Map([[airline, num_flights]]));
+    }
+
+    return currentFlightCounts;
+}
 
 
 function draw_flights (airports_list) {
     d3.csv("us_flights.csv", function(flights) {
         var routesByOrigin = {};
 
+        // TODO: remove reliance on state
+        // Build flight count map in memory
+        flights.forEach(function (flight) {
+            buildFlightCount(flight, flightCounts);
+        });
+
+        // DEBUG
+        console.log(flightCounts);
+        
+
+        // Add flight information to html
         flights.forEach(function(flight) {
                         var origin = flight.ORIGIN;
                         var destination = flight.DEST;
