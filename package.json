@@ -1,0 +1,16 @@
+{
+  "name": "airline-visualization",
+  "description": "Visualization of and blog post about finding which airlines fly out of which airports most frequently. This visualization was originally built to satisfy a class assignment for a [CSCI 183 Data Science] (http://klinvill.github.io/CSCI-183-Data-Science/) course I took. This visualization has been moved into it's own repository.",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "karma start karma.conf.js --single-run"
+  },
+  "devDependencies": {
+    "jasmine-core": "*",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-requirejs": "^0.2.2",
+    "phantomjs": "*",
+    "requirejs": "*",
+    "d3": "*"
+  }
+}
