@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "jasmine-core": "*",
+    "karma": "*",
     "karma-chrome-launcher": "^0.2.2",
     "karma-requirejs": "^0.2.2",
     "phantomjs": "*",
