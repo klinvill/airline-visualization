@@ -1,0 +1,6 @@
+{
+    "globals": {
+        "d3": true
+    },
+    "esversion": 6
+}

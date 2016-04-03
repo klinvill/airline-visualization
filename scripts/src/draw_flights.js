@@ -1,6 +1,6 @@
 // define(['d3'], function(d3) {
 
-function buildFlightCount (flight, currentFlightCounts) {
+export function buildFlightCount (flight, currentFlightCounts) {
 
     var origin = flight.ORIGIN;
     var destination = flight.DEST;

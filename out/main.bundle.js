@@ -219,6 +219,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.buildFlightCount = buildFlightCount;
 	exports.draw_flights = draw_flights;
 	// define(['d3'], function(d3) {
 
