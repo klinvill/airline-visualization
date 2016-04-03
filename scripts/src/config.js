@@ -2,14 +2,16 @@
  * Holds the configuration parameters for the airline visualization
  */
 
-var config = {
+// TODO: implement ES2015 module import/export syntax with Babel
+
+export var config = {
     // Preferred and fallback map sizes
     "preferred_width": 1200,
     "preferred_height": 700,
     "fallback_width": 1300,
     "fallback_height": 900, 
 
-    // Config parameters to determine the normal and enlarged sizes of the airport circls
+    // Config parameters to determine the normal and enlarged sizes of the airport circles
     "standard_airport_radius": 3,
     "hover_airport_radius": 6,
 

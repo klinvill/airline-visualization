@@ -32,8 +32,33 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+        'scripts/test/test-main.js': ['webpack']
     },
 
+    webpack: {
+        module: {
+            loaders: [
+              {
+                test: /\.jsx?$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'babel-loader', // 'babel-loader' is also a legal name to reference
+                query: {
+                  presets: ['es2015']
+                }
+              },
+              {
+                test: /\.css$/,
+                loaders: ["style", "css"]
+              }
+            ]
+        }
+    },
+
+    webpackMiddleware: {
+        // webpack-dev-middleware configuration
+        // i. e.
+        noInfo: true
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

@@ -1,6 +1,6 @@
-// TODO: Reading key_airlines.csv is done multiple times, this needs to be consolidated into one call
+import { config } from "./config.js";
 
-d3.csv("key_airlines.csv", function (airlines) {
+export function addFlightCountChart(airlines) {
 
     d3.select("#airline_bar_chart")
         .append("text")
@@ -31,25 +31,6 @@ d3.csv("key_airlines.csv", function (airlines) {
       .attr("class", "airlineCount")
       .attr("y", function(d, i) {return ((i+1)*2)+"em";})
       .attr("dy", "1em");
-
-});
-
-function countFlightsByAirline(src_airport) {
-    /*
-    var airline_counts = []
-    d3.selectAll("[data-src-airport="+src_airport+"] path")
-        .each(function(d, i) {
-            airline_counts.push(JSON.parse(d3.select(this).attr("data-airlines")));
-        });
-    console.log(typeof(airline_counts), airline_counts);
-    //var mapped_airline_counts = airline_counts.map(function (currentVal, index, array) {return Map(currentVal);});
-    return airline_counts.reduce(reduceFlights, new Map(airlines.map(function (currentVal, index, array){
-        return [currentVal, 0];
-    })));
-    */
-
-    // TODO: flightCounts is a global variable that is dependent on the draw_flights.js script
-    return flightCounts.get(src_airport);
 }
 
 /**
@@ -75,8 +56,8 @@ function reduceFlights(previousValue, currentValue, currentIndex, array) {
 }
 
 
-function graphCountsByAirline (src_airport) {
-    var airline_counts = countFlightsByAirline(src_airport);
+export function graphCountsByAirline (src_airport, flightCounts) {
+    var airline_counts = flightCounts.get(src_airport);
     var local_max = Math.max(...airline_counts.values());
     var airlines = airline_counts.keys();
 

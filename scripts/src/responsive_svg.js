@@ -1,9 +1,11 @@
 /**
  * Holds the javascript functions that are fired in response to user actions (mouseovers, clicks, etc.)
  */
+import { graphCountsByAirline } from "./flight_count.js";
+import { config } from "./config.js";
 
 // Globally tracks which airport is currently selected
-var selected_airport;
+export var selected_airport;
 
 /**
  * Enlarges an airport icon on the map
@@ -56,17 +58,14 @@ function highlight_airline() {
 }
 
 
-function unhighlight_airline() {
+function unhighlight_airlines() {
     var this_node = d3.select(this);
 
-    console.log(this_node.attr("class").slice());
-
-    //return this_node.attr("class");
     return "arc";
 }
 
 
-function attach_airport_handlers() {
+export function attach_airport_handlers(flightCounts) {
     // When hovering over an airport on the map, the airport should appear larger
     //      and all routes from that airport should appear
     var airports = d3.selectAll(".airport");
@@ -85,45 +84,40 @@ function attach_airport_handlers() {
             if (d.AIRPORT != selected_airport) {
                 hide_routes_from(d.AIRPORT);
                 d3.selectAll("[data-src-airport='"+d.AIRPORT+"'] .arc")
-                    .attr("class", unhighlight_airline);
+                    .attr("class", unhighlight_airlines);
             }
         })
 
         .on("click", function (d, i) {
             hide_routes_from(selected_airport);
             d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
-                .attr("class", unhighlight_airline);
+                .attr("class", unhighlight_airlines);
 
             selected_airport = d.AIRPORT;
+
             d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
                 .attr("class", highlight_airline);
             show_routes_from(d.AIRPORT);
             d3.select("#selected_airport_name").text(d.DISPLAY_AIRPORT_NAME);
 
-            // The currently selected airport code is stored so that it can be easily accessed to only change the color of the highlighted routes
-            d3.select("#routes").attr("data-selected", d.AIRPORT);
-
             // TODO: Dependent on flight_count.js
-            graphCountsByAirline(d.AIRPORT);
+            graphCountsByAirline(d.AIRPORT, flightCounts);
         })
     ;
 }
 
 
 
-function attach_airline_handlers() {
+export function attach_airline_handlers() {
     var airline_selector = d3.selectAll(".key input");
-    
-    airline_selector.on("click", function(d, i) {
-        //selected_airport = d3.select("#routes").attr("data-selected");
 
-        // resets the highlighting
-        //d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc").attr("class", "arc");
+    airline_selector.on("click", function(d, i) {
+
         d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
-            .attr("class", unhighlight_airline);
+            .attr("class", unhighlight_airlines);
 
         d3.selectAll("[data-src-airport='"+selected_airport+"'] .arc")
             .attr("class", highlight_airline);
-    })
+    });
 }
 

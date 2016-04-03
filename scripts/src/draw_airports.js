@@ -5,11 +5,10 @@
  * 
  */
 
-(function () {
-    d3.csv("filtered_airports.csv", function (airports_list) {
-        var svg = d3.select("#airline_visualization");
+import { config } from "./config.js";
 
-        var geomap = get_geomap();
+export function draw_airports(svg, geomap) {
+    return function (airports_list) {
 
         var airports = svg.append("svg:g")
           .attr("id", "airports");
@@ -26,13 +25,5 @@
             .attr("data-airport-cd", function(d) { return d.AIRPORT;})
             .attr("data-airport-name", function(d) { return d.DISPLAY_AIRPORT_NAME;})
         ;
-
-    
-        // The draw_flights function requires the location of the airports. The draw 
-        //      flights function is called from within the draw airports function 
-        //      in order to keep this data out of the global scope.
-        draw_flights(airports_list); 
-
-    });
-
-}) ();
+    };
+}
