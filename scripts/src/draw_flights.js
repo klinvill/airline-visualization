@@ -1,4 +1,4 @@
-define(['d3'], function(d3) {
+// define(['d3'], function(d3) {
 
     var svg = d3.select("#airline_visualization");
 
@@ -79,13 +79,13 @@ define(['d3'], function(d3) {
                             var destination = flight.DEST;
                             var airline = flight.UNIQUE_CARRIER;
                             var route_info = routesByOrigin[origin] || (routesByOrigin[origin] = {});
-                            var num_flights = flight.FLIGHTS
+                            var num_flights = flight.FLIGHTS;
 
 
                             if(!route_info[destination])
-                                route_info[destination] =   {source: origin 
-                                                            ,target: destination 
-                                                            ,airlines: {}
+                                route_info[destination] =   {source: origin, 
+                                                            target: destination, 
+                                                            airlines: {}
                                                             };
                             if (route_info[destination].airlines[airline])
                                 route_info[destination].airlines[airline] += Number(num_flights);
@@ -102,13 +102,13 @@ define(['d3'], function(d3) {
             var airport_locations = {};
             airports_list.forEach(function (airport) {
                 airport_locations[airport.AIRPORT] = [airport.LONGITUDE, airport.LATITUDE];
-            })
+            });
 
             var geomap = get_geomap();
             var path = d3.geo.path().projection(geomap);
             var arc = d3.geo.greatArc()
-                .source(function(d) { return airport_locations[d.source] })
-                .target(function(d) { return airport_locations[d.target] })
+                .source(function(d) { return airport_locations[d.source]; })
+                .target(function(d) { return airport_locations[d.target]; })
             ; 
 
 
@@ -122,12 +122,12 @@ define(['d3'], function(d3) {
                 .data(airports_list)
                 .enter().append("svg:g")
                 .attr("class", "arcs")
-                .attr("data-src-airport", function(d) { return d.AIRPORT})
+                .attr("data-src-airport", function(d) { return d.AIRPORT; })
                 .selectAll("path.arc")
-                .data(function(d) {return d3.values(routesByOrigin[d.AIRPORT])})
+                .data(function(d) {return d3.values(routesByOrigin[d.AIRPORT]); })
                 .enter().append("svg:path")
                 .attr("class", "arc")
-                .attr("data-dest-airport", function(d) {return d.target})
+                .attr("data-dest-airport", function(d) {return d.target; })
                 .attr("data-airlines", function(d) {return JSON.stringify(d.airlines);})
                 .attr("d", function(d) { return path(arc(d)); })
 
@@ -141,10 +141,10 @@ define(['d3'], function(d3) {
 
 
     // Return functions and data as an object to comply with RequireJS' format
-    return {
-        flightCounts: flightCounts
-        ,buildFlightCount: buildFlightCount
-        ,draw_flights: draw_flights
-    }
+    // return {
+    //     flightCounts: flightCounts,
+    //     buildFlightCount: buildFlightCount,
+    //     draw_flights: draw_flights
+    // }
     
-});
+// });

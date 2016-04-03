@@ -17,11 +17,7 @@ var airport_radius = 3,
 var path = d3.geo.path()
   .projection(projection);
 
-var country = svg.append("svg:g")
-  .attr("id", "country");
 
-var states = svg.append("svg:g")
-  .attr("id", "states");
 
 var routes = svg.append("svg:g")
   .attr("id", "routes");
@@ -29,41 +25,47 @@ var routes = svg.append("svg:g")
 var circles = svg.append("svg:g")
   .attr("id", "airports");
 
+function drawUS(svg) {
+  var country = svg.append("svg:g")
+    .attr("id", "country");
 
-d3.json("us.json", function(error, us) {
-  
-  svg.selectAll("#country")
-    .datum(topojson.feature(us, us.objects.land))
-    .append("svg:path")
-    .attr("class", "land")
-    .attr("d", path);
- 
-  svg.selectAll("#states")
-    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-    .append("svg:path")
-    .attr("class", "state-boundary")
-    .attr("d", path);
-});
+  var states = svg.append("svg:g")
+    .attr("id", "states");
+
+  d3.json("us.json", function(error, us) {
+    svg.selectAll("#country")
+      .datum(topojson.feature(us, us.objects.land))
+      .append("svg:path")
+      .attr("class", "land")
+      .attr("d", path);
+   
+    svg.selectAll("#states")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .append("svg:path")
+      .attr("class", "state-boundary")
+      .attr("d", path);
+  });
+}
 
 d3.select(self.frameElement).style("height", height + "px");
 
 
-d3.csv("us_flights.csv", function(flights) {
-  var linksByOrigin = {},
-  countByAirport = {},
-  locationByAirport = {},
-  positions = [],
-  maxFlightsPerAirline = 0;
-  
+function highlight_airline(d, i) {
+  var this_node = d3.select(this);
+  var clicked_airline = d3.select("input[name=airline]:checked").attr("value");
+  if (this_node.attr("data-airlines").split(",").indexOf(clicked_airline) != -1)
+    return this_node.attr("class") + " highlighted";
+  else
+    return this_node.attr("class");
+}
 
-  function highlight_airline(d, i) {
-    var this_node = d3.select(this);
-    var clicked_airline = d3.select("input[name=airline]:checked").attr("value");
-    if (this_node.attr("data-airlines").split(",").indexOf(clicked_airline) != -1)
-      return this_node.attr("class") + " highlighted";
-    else
-      return this_node.attr("class");
-  }
+
+d3.csv("us_flights.csv", function(flights) {
+  var linksByOrigin = {};
+  var countByAirport = {};
+  var locationByAirport = {};
+  var positions = [];
+  var maxFlightsPerAirline = 0;  
 
   var arc = d3.geo.greatArc()
   .source(function(d) { return locationByAirport[d.source]; })
@@ -71,41 +73,42 @@ d3.csv("us_flights.csv", function(flights) {
 
 
   flights.forEach(function(flight) {
-                    var origin = flight.ORIGIN,
-                    destination = flight.DEST,
-                    airline = flight.UNIQUE_CARRIER,
-                    links = linksByOrigin[origin] || (linksByOrigin[origin] = {});
-                    if(links[destination])
-                      links[destination].airlines.push(airline);
-                    else
-                      links[destination] = {source: origin, target: destination, airlines: [airline]};
-                    if(countByAirport[origin]) {
-                      countByAirport[origin].Total = countByAirport[origin].Total + Number(flight.FLIGHTS);
-                      countByAirport[origin][airline] = (countByAirport[origin][airline] || 0) + Number(flight.FLIGHTS);
-                      if (countByAirport[origin][airline] > maxFlightsPerAirline)
-                          maxFlightsPerAirline = countByAirport[origin][airline];
-                    } else {
-                      countByAirport[origin] = {};
-                      countByAirport[origin].Total = Number(flight.FLIGHTS);
-                      countByAirport[origin][airline] = Number(flight.FLIGHTS);
-                      if (countByAirport[origin][airline] > maxFlightsPerAirline)
-                          maxFlightsPerAirline = countByAirport[origin][airline];
-                    }
-                    if (countByAirport[destination]) {
-                      countByAirport[destination].Total = countByAirport[destination].Total + Number(flight.FLIGHTS);
-                      countByAirport[destination][airline] = (countByAirport[destination][airline] || 0) + Number(flight.FLIGHTS);
-                      if (countByAirport[destination][airline] > maxFlightsPerAirline)
-                          maxFlightsPerAirline = countByAirport[destination][airline];
-                    } else {
-                      countByAirport[destination] = {};
-                      countByAirport[destination].Total = Number(flight.FLIGHTS);
-                      countByAirport[destination][airline] = Number(flight.FLIGHTS);
-                      if (countByAirport[destination][airline] > maxFlightsPerAirline)
-                          maxFlightsPerAirline = countByAirport[destination][airline];
-                    }
+    var origin = flight.ORIGIN;
+    var destination = flight.DEST;
+    var airline = flight.UNIQUE_CARRIER;
+    var links = linksByOrigin[origin] || (linksByOrigin[origin] = {});
 
-                    
-                  });
+    if (links[destination]) links[destination].airlines.push(airline);
+    else links[destination] = {source: origin, target: destination, airlines: [airline]};
+
+    if(countByAirport[origin]) {
+      countByAirport[origin].Total = countByAirport[origin].Total + Number(flight.FLIGHTS);
+      countByAirport[origin][airline] = (countByAirport[origin][airline] || 0) + Number(flight.FLIGHTS);
+      if (countByAirport[origin][airline] > maxFlightsPerAirline)
+          maxFlightsPerAirline = countByAirport[origin][airline];
+    } else {
+      countByAirport[origin] = {};
+      countByAirport[origin].Total = Number(flight.FLIGHTS);
+      countByAirport[origin][airline] = Number(flight.FLIGHTS);
+      if (countByAirport[origin][airline] > maxFlightsPerAirline)
+          maxFlightsPerAirline = countByAirport[origin][airline];
+    }
+
+
+    if (countByAirport[destination]) {
+      countByAirport[destination].Total = countByAirport[destination].Total + Number(flight.FLIGHTS);
+      countByAirport[destination][airline] = (countByAirport[destination][airline] || 0) + Number(flight.FLIGHTS);
+      if (countByAirport[destination][airline] > maxFlightsPerAirline)
+          maxFlightsPerAirline = countByAirport[destination][airline];
+    } else {
+      countByAirport[destination] = {};
+      countByAirport[destination].Total = Number(flight.FLIGHTS);
+      countByAirport[destination][airline] = Number(flight.FLIGHTS);
+      if (countByAirport[destination][airline] > maxFlightsPerAirline)
+          maxFlightsPerAirline = countByAirport[destination][airline];
+    }
+    
+  });
 
 
   var bar_chart_width = d3.select("#airline_bar_chart") .attr("width");
@@ -132,7 +135,7 @@ d3.csv("us_flights.csv", function(flights) {
     .text("Highlight an Airline");
 
     airlines.forEach(function (airline) {
-      var entry = key.append("span")
+      var entry = key.append("span");
 
       entry.append("input")
       .attr("type", "radio")
@@ -179,7 +182,7 @@ d3.csv("us_flights.csv", function(flights) {
     
     });
 
-    var entry = d3.select(".key").append("span")
+    var entry = d3.select(".key").append("span");
 
     entry.append("input")
       .attr("type", "radio")
@@ -243,7 +246,7 @@ d3.csv("us_flights.csv", function(flights) {
             d3.select("[data-airport='"+prev_clicked+"']").filter(".arcs").style("display", "none");
             d3.selectAll("[data-airport='"+prev_clicked+"'] .arc").attr("class", "arc");
           
-            d3.select("#routes").attr("data-selected", new_clicked)
+            d3.select("#routes").attr("data-selected", new_clicked);
 
             // Show the routes associated with the newly selected airport
             d3.select("[data-airport='"+new_clicked+"']").filter(".arcs").style("display", "inherit");
@@ -276,7 +279,7 @@ d3.csv("us_flights.csv", function(flights) {
         .data(function(d) {return d3.values(linksByOrigin[d.AIRPORT]) || []; })
         .enter().append("svg:path")
         .attr("class", "arc")
-        .attr("data-airlines", function(d) { return d.airlines.join(",")})
+        .attr("data-airlines", function(d) { return d.airlines.join(","); })
         .attr("d", function(d) { return path(arc(d)); });
 
     });
