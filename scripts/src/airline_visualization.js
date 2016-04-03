@@ -47,6 +47,8 @@ function drawUS(svg) {
   });
 }
 
+drawUS(svg);
+
 d3.select(self.frameElement).style("height", height + "px");
 
 

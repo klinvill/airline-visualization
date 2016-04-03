@@ -7,7 +7,7 @@
 
 /**
  * Creates and initializes the d3.geo map projection.
- * @return {function} Initialized d3.geo map projection.
+ * @return {projection} Initialized d3.geo map projection.
  */
 function get_geomap() {
     var svg = d3.select("#airline_visualization");
@@ -27,36 +27,40 @@ function get_geomap() {
 }
 
 
+/**
+ * Draw geomap of the US using the data in the us.json file
+ * @param  {[type]} svg d3 svg element to draw the map in
+ * @param {[type]} geomap d3 geo projection to use for the map
+ */
+function drawUS(svg, geomap) {
+  var path = d3.geo.path()
+    .projection(geomap);
+
+  var country = svg.append("svg:g")
+    .attr("id", "country");
+
+  var states = svg.append("svg:g")
+    .attr("id", "states");
+
+  d3.json("us.json", function(error, us) {
+    svg.selectAll("#country")
+      .datum(topojson.feature(us, us.objects.land))
+      .append("svg:path")
+      .attr("class", "land")
+      .attr("d", path);
+   
+    svg.selectAll("#states")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .append("svg:path")
+      .attr("class", "state-boundary")
+      .attr("d", path);
+  });
+}
+
+
 
 (function () {
-    var svg = d3.select("#airline_visualization");
-
-    var geomap = get_geomap();
-
-    var path = d3.geo.path()
-      .projection(geomap);
-
-    var country = svg.append("svg:g")
-      .attr("id", "country");
-
-    var states = svg.append("svg:g")
-      .attr("id", "states");
-
-
-    // Draw geomap of the US using the data in the us.json file
-    d3.json("us.json", function(error, us) {
-      
-      svg.selectAll("#country")
-        .datum(topojson.feature(us, us.objects.land))
-        .append("svg:path")
-        .attr("class", "land")
-        .attr("d", path);
-     
-      svg.selectAll("#states")
-        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-        .append("svg:path")
-        .attr("class", "state-boundary")
-        .attr("d", path);
-    });
+  var svg = d3.select("#airline_visualization");
+  var geomap = get_geomap();
+  drawUS(svg, geomap);
 }) ();
-
