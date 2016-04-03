@@ -15,9 +15,9 @@ function get_geomap() {
     var height = Number(svg.attr("height"));
 
 
-    // Full size geomap should be shown at 1200 width and 700 height, otherwise the geomap is optimized for about a 700 width
-    //    and 500 height
-    var geomap_scale = ((width == 1200 && height == 700) ? 1300 : 900);
+    // Full size geomap should be shown at 1200 width and 700 height
+    var geomap_scale = ((width == config.preferred_width && height == config.preferred_height) ? config.fallback_width : config.fallback_height);
+    console.log(geomap_scale);
 
     var geomap = d3.geo.albersUsa()
       .scale(geomap_scale)

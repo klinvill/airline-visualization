@@ -10,7 +10,7 @@ var selected_airport;
  * @param  {DOM Element} element The airport element to be enlarged
  */
 function magnify_airport(element) {
-    d3.select(element).attr("r", hover_airport_radius);
+    d3.select(element).attr("r", config.hover_airport_radius);
 }
 
 /**
@@ -18,7 +18,7 @@ function magnify_airport(element) {
  * @param  {DOM Element} element The airport element to be returned to normal size
  */
 function unmagnify_airport(element) {
-    d3.select(element).attr("r", standard_airport_radius);
+    d3.select(element).attr("r", config.standard_airport_radius);
 }
 
 /**

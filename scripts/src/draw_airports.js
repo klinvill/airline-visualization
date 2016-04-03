@@ -21,7 +21,7 @@
 
             .attr("cx", function(d, i) { return geomap([d.LONGITUDE, d.LATITUDE])[0]; })
             .attr("cy", function(d, i) { return geomap([d.LONGITUDE, d.LATITUDE])[1]; })
-            .attr("r", standard_airport_radius)
+            .attr("r", config.standard_airport_radius)
 
             .attr("data-airport-cd", function(d) { return d.AIRPORT;})
             .attr("data-airport-name", function(d) { return d.DISPLAY_AIRPORT_NAME;})

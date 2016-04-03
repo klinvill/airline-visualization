@@ -1,3 +1,5 @@
+// Note: This is the original monolithic code that is deprecated in favor of more re-usable chunks
+
 var svg = d3.select("#airline_visualization");
 var width =  Number(svg.attr("width")),
     height = Number(svg.attr("height"));

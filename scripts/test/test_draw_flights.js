@@ -1,5 +1,5 @@
 // Requires draw_flights.js
-// define(['d3', 'draw_flights'], function(d3, df) {
+define(['d3', 'draw_flights'], function(d3, df) {
 
     describe ( "Test draw_flights.js", function() {
 
@@ -51,4 +51,4 @@
         //it ("buildFlightCount fails for a negative flight count", function() {})
 
     });
-// });
+});

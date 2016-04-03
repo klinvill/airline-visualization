@@ -4,7 +4,7 @@ d3.csv("key_airlines.csv", function (airlines) {
 
     d3.select("#airline_bar_chart")
         .append("text")
-        .attr("x", (bar_chart_width / 2))             
+        .attr("x", (config.bar_chart_width / 2))             
         .attr("y", "1em")
         .attr("text-anchor", "middle")  
         .text("Flights per Month by Airline and Airport");
@@ -82,7 +82,7 @@ function graphCountsByAirline (src_airport) {
 
     var x_scale = d3.scale.linear()
                     .domain([0, local_max])
-                    .range([0, bar_chart_width - axis_width - label_width]);
+                    .range([0, config.bar_chart_width - config.axis_width - config.label_width]);
 
     d3.selectAll("#airline_bar_chart g").each (function(d, i) {
         var airline = d3.select(this).attr("data-airline");
