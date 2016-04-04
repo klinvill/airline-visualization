@@ -89,7 +89,7 @@
               <p>The visualization in this post was adapted from <a href="http://mbostock.github.io/d3/talk/20111116/airports.html">one of Mike Bostock's examples</a> using the JavaScript library <a href="d3js.org">D3</a> and was influenced by fivethirtyeight's <a href="http://fivethirtyeight.com/interactives/flights/">"Which Flight Will Get You There Fastest"</a>. If the visualization is a little too small, you can access an expanded version <a href="airline_visualization.html">here</a>.</p>
             </section>
             <section>
-              <h2> <span></span> <br> Airline Visualization </h2>
+              <h2> <span id="selected_airport_name"></span> <br> Airline Visualization </h2>
               <svg id="airline_visualization" width="700" height="500"></svg>
               <form class="key"></form>
               <svg id="airline_bar_chart" width = "700" height = "400"></svg>
@@ -155,6 +155,6 @@
     <script src="resources/d3/d3.min.js"></script>
     <script src="resources/topojson.min.js"></script>
 
-    <script type="text/javascript" src="airline_visualization.js"></script>
+    <script type="text/javascript" src="out/main.bundle.js"></script>
   </body>
 </html>
