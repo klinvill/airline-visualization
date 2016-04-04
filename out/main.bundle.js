@@ -63,21 +63,21 @@
 	    var geomap = (0, _draw_us_states.get_geomap)();
 	    (0, _draw_us_states.drawUS)(svg, geomap);
 
-	    d3.csv("filtered_airports.csv", function (airport_list) {
+	    d3.csv("../data/processed/filtered_airports.csv", function (airport_list) {
 	        (0, _draw_airports.draw_airports)(svg, geomap)(airport_list);
 
 	        // The draw_flights function requires the location of the airports. The draw
 	        //      flights function is called from within the airport parsing function
 	        //      in order to keep this data out of the global scope and to guarantee
 	        //      that the data has been loaded.
-	        d3.csv("us_flights.csv", function (flights) {
+	        d3.csv("../data/processed/us_flights.csv", function (flights) {
 	            var flightCounts = (0, _draw_flights.draw_flights)(svg, geomap, airport_list)(flights);
 
 	            (0, _responsive_svg.attach_airport_handlers)(flightCounts);
 	        });
 	    });
 
-	    d3.csv("key_airlines.csv", function (airlines) {
+	    d3.csv("../data/processed/key_airlines.csv", function (airlines) {
 	        (0, _select_airline.add_airline_select_box)()(airlines);
 	        (0, _responsive_svg.attach_airline_handlers)();
 
@@ -134,7 +134,7 @@
 
 	  var states = svg.append("svg:g").attr("id", "states");
 
-	  d3.json("us.json", function (error, us) {
+	  d3.json("../data/us.json", function (error, us) {
 	    svg.selectAll("#country").datum(topojson.feature(us, us.objects.land)).append("svg:path").attr("class", "land").attr("d", path);
 
 	    svg.selectAll("#states").datum(topojson.mesh(us, us.objects.states, function (a, b) {

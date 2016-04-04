@@ -42,7 +42,7 @@ export function drawUS(svg, geomap) {
   var states = svg.append("svg:g")
     .attr("id", "states");
 
-  d3.json("us.json", function(error, us) {
+  d3.json("../data/us.json", function(error, us) {
     svg.selectAll("#country")
       .datum(topojson.feature(us, us.objects.land))
       .append("svg:path")
