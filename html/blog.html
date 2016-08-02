@@ -45,7 +45,7 @@
         <div class="col-sm-9 blog-main">
 
           <div class="blog-header">
-            <h1 class="blog-title">All Tech Considered</h1>
+            <h1 class="blog-title">All Things Tech</h1>
             <p class="lead blog-description">Kirby's adventures and misadventures in the tech world.</p>
           </div>
 
@@ -86,7 +86,7 @@
 
               <br/>
               <h3>The Final Product</h3>
-              <p>The visualization in this post was adapted from <a href="http://mbostock.github.io/d3/talk/20111116/airports.html">one of Mike Bostock's examples</a> using the JavaScript library <a href="d3js.org">D3</a> and was influenced by fivethirtyeight's <a href="http://fivethirtyeight.com/interactives/flights/">"Which Flight Will Get You There Fastest"</a>. If the visualization is a little too small, you can access an expanded version <a href="airline_visualization.html">here</a>.</p>
+              <p>The visualization in this post was adapted from <a href="http://mbostock.github.io/d3/talk/20111116/airports.html">one of Mike Bostock's examples</a> using the JavaScript library <a href="d3js.org">D3</a> and was influenced by fivethirtyeight's <a href="http://fivethirtyeight.com/interactives/flights/">"Which Flight Will Get You There Fastest"</a>. If the visualization is a little too small, you can access an expanded version <a href="airline_visualization.html">here</a>. The expanded version pulls the latest data available from the BTS. I've written a AWS Lambda function to periodically grab the latest data from the BTS and pre-process it for this visualization. The processed data is then stored in S3 for the visualization to retrieve. Since this is an automated process, there may be bugs with the visualization.</p>
             </section>
             <section>
               <h2> <span id="selected_airport_name"></span> <br> Airline Visualization </h2>

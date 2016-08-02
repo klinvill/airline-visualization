@@ -14,7 +14,7 @@ export function addFlightCountChart(airlines) {
                       .data(airlines)
                       .enter().append("svg:g");
 
-    chart.attr("data-airline", function(d) {return d.Code;});
+    chart.attr("data-airline", function(d) {return d.UNIQUE_CARRIER;});
 
     chart.append("svg:text")
       .text(function(d) {return d.Description;})
@@ -44,14 +44,7 @@ export function addFlightCountChart(airlines) {
  */
 function reduceFlights(previousValue, currentValue, currentIndex, array) {
     var ret = new Map(previousValue);
-    //var ret = {};
     ret.forEach(function (val, key, map) {if (currentValue.get(map) !== undefined) ret.set(key, val + currentValue.get(key));});
-    /*
-    for (airline in Object.keys(previousValue)) {
-        if (currentValue[airline] !== undefined) ret[airline] = previousValue[airline] + currentValue[airline];
-        else ret[airline] = previousValue[airline];
-    }
-    */
     return ret;
 }
 
@@ -61,7 +54,7 @@ export function graphCountsByAirline (src_airport, flightCounts) {
     var local_max = Math.max(...airline_counts.values());
     var airlines = airline_counts.keys();
 
-    var x_scale = d3.scale.linear()
+    var x_scale = d3.scaleLinear()
                     .domain([0, local_max])
                     .range([0, config.bar_chart_width - config.axis_width - config.label_width]);
 

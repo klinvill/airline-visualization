@@ -1,3 +1,7 @@
+.subnote {
+  text-align: center;
+}
+
 #airline_visualization {
   cursor: pointer;
   float: left;
