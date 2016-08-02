@@ -15,7 +15,7 @@ describe ( "Test draw_flights.js", function() {
             "ORIGIN": origin,
             "DEST": destination,
             "UNIQUE_CARRIER": airline,
-            "FLIGHTS": count
+            "Flights": count
         };
 
         var res = buildFlightCount(flight, new Map());
@@ -38,7 +38,7 @@ describe ( "Test draw_flights.js", function() {
             "ORIGIN": origin,
             "DEST": destination,
             "UNIQUE_CARRIER": airline,
-            "FLIGHTS": count
+            "Flights": count
         };
 
         var res = buildFlightCount(flight, new Map());
