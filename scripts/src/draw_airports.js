@@ -15,7 +15,8 @@ export function draw_airports(svg, geomap) {
 
         airports.selectAll("circle")
             .data(airports_list)
-            .enter().append("svg:circle")
+            .enter()
+            .append("svg:circle")
             .attr("class", "airport")
 
             .attr("cx", function(d, i) { return geomap([d.LONGITUDE, d.LATITUDE])[0]; })

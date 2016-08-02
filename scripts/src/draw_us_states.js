@@ -19,7 +19,7 @@ export function get_geomap() {
     // Full size geomap should be shown at 1200 width and 700 height
     var geomap_scale = ((width == config.preferred_width && height == config.preferred_height) ? config.fallback_width : config.fallback_height);
 
-    var geomap = d3.geo.albersUsa()
+    var geomap = d3.geoAlbersUsa()
       .scale(geomap_scale)
       .translate([width / 2, height / 2]);
 
@@ -33,7 +33,7 @@ export function get_geomap() {
  * @param {[type]} geomap d3 geo projection to use for the map
  */
 export function drawUS(svg, geomap) {
-  var path = d3.geo.path()
+  var path = d3.geoPath()
     .projection(geomap);
 
   var country = svg.append("svg:g")

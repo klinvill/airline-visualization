@@ -63,21 +63,30 @@
 	    var geomap = (0, _draw_us_states.get_geomap)();
 	    (0, _draw_us_states.drawUS)(svg, geomap);
 
-	    d3.csv("../data/processed/filtered_airports.csv", function (airport_list) {
+	    // d3.csv("../data/processed/filtered_airports.csv", function (airport_list) {
+	    d3.csv("https://s3.amazonaws.com/airline-visualizations/processed_data/airports.csv").get(function (airport_list) {
+
+	        // filter out airports that are located outside the boundaries of the used geomap
+	        airport_list = airport_list.filter(function (airport) {
+	            return geomap([airport.LONGITUDE, airport.LATITUDE]) !== null;
+	        });
+
 	        (0, _draw_airports.draw_airports)(svg, geomap)(airport_list);
 
 	        // The draw_flights function requires the location of the airports. The draw
 	        //      flights function is called from within the airport parsing function
 	        //      in order to keep this data out of the global scope and to guarantee
 	        //      that the data has been loaded.
-	        d3.csv("../data/processed/us_flights.csv", function (flights) {
+	        // d3.csv("../data/processed/us_flights.csv", function (flights) {
+	        d3.csv("https://s3.amazonaws.com/airline-visualizations/processed_data/flights.csv").get(function (flights) {
 	            var flightCounts = (0, _draw_flights.draw_flights)(svg, geomap, airport_list)(flights);
 
 	            (0, _responsive_svg.attach_airport_handlers)(flightCounts);
 	        });
 	    });
 
-	    d3.csv("../data/processed/key_airlines.csv", function (airlines) {
+	    // d3.csv("../data/processed/key_airlines.csv", function (airlines) {
+	    d3.csv("https://s3.amazonaws.com/airline-visualizations/processed_data/airlines.csv").get(function (airlines) {
 	        (0, _select_airline.add_airline_select_box)()(airlines);
 	        (0, _responsive_svg.attach_airline_handlers)();
 
@@ -111,7 +120,7 @@
 	  // Full size geomap should be shown at 1200 width and 700 height
 	  var geomap_scale = width == _config.config.preferred_width && height == _config.config.preferred_height ? _config.config.fallback_width : _config.config.fallback_height;
 
-	  var geomap = d3.geo.albersUsa().scale(geomap_scale).translate([width / 2, height / 2]);
+	  var geomap = d3.geoAlbersUsa().scale(geomap_scale).translate([width / 2, height / 2]);
 
 	  return geomap;
 	}
@@ -128,7 +137,7 @@
 	 */
 
 	function drawUS(svg, geomap) {
-	  var path = d3.geo.path().projection(geomap);
+	  var path = d3.geoPath().projection(geomap);
 
 	  var country = svg.append("svg:g").attr("id", "country");
 
@@ -228,7 +237,7 @@
 	    var origin = flight.ORIGIN;
 	    var destination = flight.DEST;
 	    var airline = flight.UNIQUE_CARRIER;
-	    var num_flights = parseInt(flight.FLIGHTS, 10);
+	    var num_flights = parseInt(flight.Flights, 10);
 
 	    if (currentFlightCounts.has(origin)) {
 	        var countByAirport = currentFlightCounts.get(origin);
@@ -271,27 +280,6 @@
 
 	        var flightCounts = new Map();
 
-	        // TODO: remove reliance on state
-	        // Build flight count map in memory
-	        flights.forEach(function (flight) {
-	            buildFlightCount(flight, flightCounts);
-	        });
-
-	        // Add flight information to html
-	        flights.forEach(function (flight) {
-	            var origin = flight.ORIGIN;
-	            var destination = flight.DEST;
-	            var airline = flight.UNIQUE_CARRIER;
-	            var route_info = routesByOrigin[origin] || (routesByOrigin[origin] = {});
-	            var num_flights = flight.FLIGHTS;
-
-	            if (!route_info[destination]) route_info[destination] = { source: origin,
-	                target: destination,
-	                airlines: {}
-	            };
-	            if (route_info[destination].airlines[airline]) route_info[destination].airlines[airline] += Number(num_flights);else route_info[destination].airlines[airline] = Number(num_flights);
-	        });
-
 	        // airports_list is an array so random access by airport is slow.
 	        //      Since we want to be able to lookup the location of the source
 	        //      and target airports, it will be easier and faster to put the
@@ -302,12 +290,45 @@
 	            airport_locations[airport.AIRPORT] = [airport.LONGITUDE, airport.LATITUDE];
 	        });
 
-	        var path = d3.geo.path().projection(geomap);
-	        var arc = d3.geo.greatArc().source(function (d) {
-	            return airport_locations[d.source];
-	        }).target(function (d) {
-	            return airport_locations[d.target];
+	        // filter out flights whose airports are not in the airports_list, needed because there are several airports that don't show up on the geomap
+	        flights = flights.filter(function (flight) {
+	            return flight.ORIGIN in airport_locations && flight.DEST in airport_locations;
 	        });
+
+	        // TODO: remove reliance on state
+	        // Build flight count map in memory
+	        flights.forEach(function (flight) {
+	            buildFlightCount(flight, flightCounts);
+	        });
+
+	        // Add flight information to html
+	        flights.forEach(function (flight) {
+	            var origin = flight.ORIGIN;
+	            var destination = flight.DEST;
+
+	            var airline = flight.UNIQUE_CARRIER;
+	            var route_info = routesByOrigin[origin] || (routesByOrigin[origin] = {});
+	            var num_flights = flight.Flights;
+
+	            if (!route_info[destination]) route_info[destination] = { source: origin,
+	                target: destination,
+	                airlines: {}
+	            };
+	            if (route_info[destination].airlines[airline]) route_info[destination].airlines[airline] += Number(num_flights);else route_info[destination].airlines[airline] = Number(num_flights);
+	        });
+
+	        var path = d3.geoPath().projection(geomap);
+	        function arc(d) {
+	            return {
+	                type: "LineString",
+	                coordinates: [airport_locations[d.source], airport_locations[d.target]]
+	            };
+	        }
+
+	        // var arc = d3.geoInterpolate()
+	        //     .source(function(d) { return airport_locations[d.source]; })
+	        //     .target(function(d) { return airport_locations[d.target]; })
+	        // ;
 
 	        // Actually draws the flight paths between airports
 	        // Stores the flights per airline data as an html data element, data-airlines
@@ -480,7 +501,7 @@
 	    var chart = d3.select("#airline_bar_chart").selectAll("g").data(airlines).enter().append("svg:g");
 
 	    chart.attr("data-airline", function (d) {
-	        return d.Code;
+	        return d.UNIQUE_CARRIER;
 	    });
 
 	    chart.append("svg:text").text(function (d) {
@@ -509,16 +530,9 @@
 	 */
 	function reduceFlights(previousValue, currentValue, currentIndex, array) {
 	    var ret = new Map(previousValue);
-	    //var ret = {};
 	    ret.forEach(function (val, key, map) {
 	        if (currentValue.get(map) !== undefined) ret.set(key, val + currentValue.get(key));
 	    });
-	    /*
-	    for (airline in Object.keys(previousValue)) {
-	        if (currentValue[airline] !== undefined) ret[airline] = previousValue[airline] + currentValue[airline];
-	        else ret[airline] = previousValue[airline];
-	    }
-	    */
 	    return ret;
 	}
 
@@ -527,7 +541,7 @@
 	    var local_max = Math.max.apply(Math, _toConsumableArray(airline_counts.values()));
 	    var airlines = airline_counts.keys();
 
-	    var x_scale = d3.scale.linear().domain([0, local_max]).range([0, _config.config.bar_chart_width - _config.config.axis_width - _config.config.label_width]);
+	    var x_scale = d3.scaleLinear().domain([0, local_max]).range([0, _config.config.bar_chart_width - _config.config.axis_width - _config.config.label_width]);
 
 	    d3.selectAll("#airline_bar_chart g").each(function (d, i) {
 	        var airline = d3.select(this).attr("data-airline");
@@ -557,7 +571,7 @@
 
 	            var entry = selection_box.append("span");
 
-	            entry.append("input").attr("type", "radio").attr("name", "airline").attr("value", airline.Code);
+	            entry.append("input").attr("type", "radio").attr("name", "airline").attr("value", airline.UNIQUE_CARRIER);
 
 	            entry.append("label").text(airline.Description);
 	            entry.append("br");

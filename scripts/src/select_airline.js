@@ -11,7 +11,7 @@ export function add_airline_select_box() {
             entry.append("input")
                 .attr("type", "radio")
                 .attr("name", "airline")
-                .attr("value", airline.Code);
+                .attr("value", airline.UNIQUE_CARRIER);
 
             entry.append("label").text(airline.Description);
             entry.append("br");

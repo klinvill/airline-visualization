@@ -5,7 +5,7 @@ export function buildFlightCount (flight, currentFlightCounts) {
     var origin = flight.ORIGIN;
     var destination = flight.DEST;
     var airline = flight.UNIQUE_CARRIER;
-    var num_flights = parseInt(flight.FLIGHTS, 10);
+    var num_flights = parseInt(flight.Flights, 10);
 
 
     if (currentFlightCounts.has(origin)) {
@@ -54,19 +54,34 @@ export function draw_flights (svg, geomap, airports_list) {
 
         var flightCounts = new Map();
 
+        // airports_list is an array so random access by airport is slow.
+        //      Since we want to be able to lookup the location of the source
+        //      and target airports, it will be easier and faster to put the
+        //      location information in airport list into an object so that 
+        //      access by key is very quick
+        var airport_locations = {};
+        airports_list.forEach(function (airport) {
+            airport_locations[airport.AIRPORT] = [airport.LONGITUDE, airport.LATITUDE];
+        });
+
+        // filter out flights whose airports are not in the airports_list, needed because there are several airports that don't show up on the geomap
+        flights = flights.filter(function (flight) { return flight.ORIGIN in airport_locations && flight.DEST in airport_locations; });
+
         // TODO: remove reliance on state
         // Build flight count map in memory
         flights.forEach(function (flight) {
             buildFlightCount(flight, flightCounts);
         });
 
+
         // Add flight information to html
         flights.forEach(function(flight) {
                         var origin = flight.ORIGIN;
                         var destination = flight.DEST;
+
                         var airline = flight.UNIQUE_CARRIER;
                         var route_info = routesByOrigin[origin] || (routesByOrigin[origin] = {});
-                        var num_flights = flight.FLIGHTS;
+                        var num_flights = flight.Flights;
 
 
                         if(!route_info[destination])
@@ -81,21 +96,20 @@ export function draw_flights (svg, geomap, airports_list) {
 
                       });
 
-        // airports_list is an array so random access by airport is slow.
-        //      Since we want to be able to lookup the location of the source
-        //      and target airports, it will be easier and faster to put the
-        //      location information in airport list into an object so that 
-        //      access by key is very quick
-        var airport_locations = {};
-        airports_list.forEach(function (airport) {
-            airport_locations[airport.AIRPORT] = [airport.LONGITUDE, airport.LATITUDE];
-        });
+        
 
-        var path = d3.geo.path().projection(geomap);
-        var arc = d3.geo.greatArc()
-            .source(function(d) { return airport_locations[d.source]; })
-            .target(function(d) { return airport_locations[d.target]; })
-        ; 
+        var path = d3.geoPath().projection(geomap);
+        function arc (d) { 
+            return {
+                type: "LineString", 
+                coordinates: [airport_locations[d.source], airport_locations[d.target]] 
+            };
+        }
+
+        // var arc = d3.geoInterpolate()
+        //     .source(function(d) { return airport_locations[d.source]; })
+        //     .target(function(d) { return airport_locations[d.target]; })
+        // ; 
 
 
         // Actually draws the flight paths between airports
