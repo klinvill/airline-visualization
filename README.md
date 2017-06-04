@@ -1,5 +1,5 @@
 # airline-visualization 
-![travis-ci build status] (https://travis-ci.org/klinvill/airline-visualization.svg?branch=refactored-split_files)
+[![Build Status](https://travis-ci.org/klinvill/airline-visualization.svg?branch=master)](https://travis-ci.org/klinvill/airline-visualization)
 
 Visualization of and blog post about finding which airlines fly out of which airports most frequently. 
 
