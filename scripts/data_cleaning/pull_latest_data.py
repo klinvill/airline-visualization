@@ -60,7 +60,7 @@ def getAirportData():
     Downloads a csv file of airports from a zipped file from the United States' Bureau of Transportation and Statistics
     :return: contents of csv file of airports
     '''
-    url = "http://www.transtats.bts.gov/DownLoad_Table.asp?Table_ID=288&Has_Group=0&Is_Zipped=0"
+    url = "https://www.transtats.bts.gov/DownLoad_Table.asp?Table_ID=288&Has_Group=0&Is_Zipped=0"
     form = "UserTableName=Master_Coordinate&DBShortName=Aviation_Support_Tables&RawDataTable=T_MASTER_CORD&sqlstr=+SELECT+AIRPORT%2CDISPLAY_AIRPORT_NAME%2CLATITUDE%2CLONGITUDE%2CAIRPORT_IS_LATEST+FROM++T_MASTER_CORD&"
     header = {"Content-Type": "application/x-www-form-urlencoded"}
 
@@ -105,7 +105,7 @@ def getFlightData(month, year):
     :param year: year to download the data for
     :return: contents of flight data csv
     '''
-    url = "http://www.transtats.bts.gov/DownLoad_Table.asp?Table_ID=236&Has_Group=3&Is_Zipped=0"
+    url = "https://www.transtats.bts.gov/DownLoad_Table.asp?Table_ID=236&Has_Group=3&Is_Zipped=0"
     form = "UserTableName=On_Time_Performance&DBShortName=On_Time&RawDataTable=T_ONTIME&sqlstr=+SELECT+UNIQUE_CARRIER%2CFL_NUM%2CORIGIN%2CDEST%2CFLIGHTS+FROM++T_ONTIME+" \
            "WHERE+Month+%3D{month}+" \
            "AND+YEAR%3D{year}" \
@@ -141,7 +141,7 @@ def getFlightDataComplete(month, year):
     :param year: year to download the data for
     :return: contents of flight data csv
     '''
-    url = "http://tsdata.bts.gov/PREZIP/On_Time_On_Time_Performance_{year}_{month}.zip" \
+    url = "https://tsdata.bts.gov/PREZIP/On_Time_On_Time_Performance_{year}_{month}.zip" \
         .format(year=year, month=month)
 
     response = requests.get(url, stream=True)
@@ -283,7 +283,7 @@ def getAirlineCodes():
     Downloads the unique carrier lookup table from the United States Bureau of Transportation Statistics
     :return: csv of unique carrier lookup table
     '''
-    url = "http://www.transtats.bts.gov/Download_Lookup.asp?Lookup=L_UNIQUE_CARRIERS"
+    url = "https://www.transtats.bts.gov/Download_Lookup.asp?Lookup=L_UNIQUE_CARRIERS"
     response = requests.get(url)
 
     if response.status_code != 200:
@@ -304,17 +304,26 @@ def denormalizeFlightCarriers(flight_data, airline_data):
 
 # Function called by AWS lambda
 def pullLatestData(event, context):
-    # Airline datasets are two months old
-    latest_airline_date = date.today() - relativedelta(months=2)
-
-    month = latest_airline_date.month
-    year = latest_airline_date.year
-
     if context is not None:
         print("Starting to pull latest data. Time remaining (MS):", context.get_remaining_time_in_millis())
 
-    flight_csv = StringIO(getFlightData(month, year))
-    flight_data = pd.read_csv(flight_csv)
+    flight_data = None
+
+    # Airline datasets are roughly two months old but we try stepping back through the last few months to be sure
+    older_months_to_try = 4
+    latest_airline_date = date.today()
+
+    while (flight_data is None or flight_data.empty) and older_months_to_try > 0:
+        older_months_to_try -= 1
+        latest_airline_date -= relativedelta(months=1)
+        month = latest_airline_date.month
+        year = latest_airline_date.year
+
+        if context is not None:
+            print("Attempting to pull data for {}-{}".format(month, year))
+
+        flight_csv = StringIO(getFlightData(month, year))
+        flight_data = pd.read_csv(flight_csv)
 
     if context is not None:
         print("Flight data read. Time remaining (MS):", context.get_remaining_time_in_millis())
