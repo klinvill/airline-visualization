@@ -61,9 +61,9 @@ export function graphCountsByAirline (src_airport, flightCounts) {
     d3.selectAll("#airline_bar_chart g").each (function(d, i) {
         var airline = d3.select(this).attr("data-airline");
 
-        d3.select("#airline_bar_chart [data-airline="+airline+"] rect")
+        d3.select("#airline_bar_chart [data-airline='"+airline+"'] rect")
           .attr("width", x_scale(airline_counts.get(airline) || 0));
-        d3.select("#airline_bar_chart [data-airline="+airline+"] .airlineCount")
+        d3.select("#airline_bar_chart [data-airline='"+airline+"'] .airlineCount")
           .text(airline_counts.get(airline) || 0)
           .attr("x", 200 + x_scale(airline_counts.get(airline) || 0) + 10);
     });   
