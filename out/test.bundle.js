@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -60,7 +60,7 @@
 	            "ORIGIN": origin,
 	            "DEST": destination,
 	            "UNIQUE_CARRIER": airline,
-	            "FLIGHTS": count
+	            "Flights": count
 	        };
 
 	        var res = (0, _draw_flights.buildFlightCount)(flight, new Map());
@@ -83,7 +83,7 @@
 	            "ORIGIN": origin,
 	            "DEST": destination,
 	            "UNIQUE_CARRIER": airline,
-	            "FLIGHTS": count
+	            "Flights": count
 	        };
 
 	        var res = (0, _draw_flights.buildFlightCount)(flight, new Map());
@@ -99,12 +99,12 @@
 	}); // Requires draw_flights.js
 	// define(['d3', 'draw_flights'], function(d3, df) {
 
-/***/ },
+/***/ }),
 /* 1 */,
 /* 2 */,
 /* 3 */,
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -166,7 +166,7 @@
 	        // airports_list is an array so random access by airport is slow.
 	        //      Since we want to be able to lookup the location of the source
 	        //      and target airports, it will be easier and faster to put the
-	        //      location information in airport list into an object so that
+	        //      location information in airport list into an object so that 
 	        //      access by key is very quick
 	        var airport_locations = {};
 	        airports_list.forEach(function (airport) {
@@ -211,12 +211,13 @@
 	        // var arc = d3.geoInterpolate()
 	        //     .source(function(d) { return airport_locations[d.source]; })
 	        //     .target(function(d) { return airport_locations[d.target]; })
-	        // ;
+	        // ; 
+
 
 	        // Actually draws the flight paths between airports
 	        // Stores the flights per airline data as an html data element, data-airlines
-	        // There are 1-many destinations nested under each source, this is to make it
-	        //      easy to show the routes from an airport when the user clicks on an
+	        // There are 1-many destinations nested under each source, this is to make it 
+	        //      easy to show the routes from an airport when the user clicks on an 
 	        //      airport on the map
 	        routes.attr("data-selected", "").selectAll("g").data(airports_list).enter().append("svg:g").attr("class", "arcs").attr("data-src-airport", function (d) {
 	            return d.AIRPORT;
@@ -243,5 +244,5 @@
 
 	// });
 
-/***/ }
+/***/ })
 /******/ ]);

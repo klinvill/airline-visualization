@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -73,9 +73,9 @@
 
 	        (0, _draw_airports.draw_airports)(svg, geomap)(airport_list);
 
-	        // The draw_flights function requires the location of the airports. The draw
-	        //      flights function is called from within the airport parsing function
-	        //      in order to keep this data out of the global scope and to guarantee
+	        // The draw_flights function requires the location of the airports. The draw 
+	        //      flights function is called from within the airport parsing function 
+	        //      in order to keep this data out of the global scope and to guarantee 
 	        //      that the data has been loaded.
 	        // d3.csv("../data/processed/us_flights.csv", function (flights) {
 	        d3.csv("https://s3.amazonaws.com/airline-visualizations/processed_data/flights.csv").get(function (flights) {
@@ -94,9 +94,9 @@
 	    });
 	})();
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -152,9 +152,9 @@
 	  });
 	}
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -184,9 +184,9 @@
 	    "label_width": 100
 	};
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -219,9 +219,9 @@
 	   * 
 	   */
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -283,7 +283,7 @@
 	        // airports_list is an array so random access by airport is slow.
 	        //      Since we want to be able to lookup the location of the source
 	        //      and target airports, it will be easier and faster to put the
-	        //      location information in airport list into an object so that
+	        //      location information in airport list into an object so that 
 	        //      access by key is very quick
 	        var airport_locations = {};
 	        airports_list.forEach(function (airport) {
@@ -328,12 +328,13 @@
 	        // var arc = d3.geoInterpolate()
 	        //     .source(function(d) { return airport_locations[d.source]; })
 	        //     .target(function(d) { return airport_locations[d.target]; })
-	        // ;
+	        // ; 
+
 
 	        // Actually draws the flight paths between airports
 	        // Stores the flights per airline data as an html data element, data-airlines
-	        // There are 1-many destinations nested under each source, this is to make it
-	        //      easy to show the routes from an airport when the user clicks on an
+	        // There are 1-many destinations nested under each source, this is to make it 
+	        //      easy to show the routes from an airport when the user clicks on an 
 	        //      airport on the map
 	        routes.attr("data-selected", "").selectAll("g").data(airports_list).enter().append("svg:g").attr("class", "arcs").attr("data-src-airport", function (d) {
 	            return d.AIRPORT;
@@ -360,9 +361,9 @@
 
 	// });
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -478,9 +479,9 @@
 	    });
 	}
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -546,14 +547,14 @@
 	    d3.selectAll("#airline_bar_chart g").each(function (d, i) {
 	        var airline = d3.select(this).attr("data-airline");
 
-	        d3.select("#airline_bar_chart [data-airline=" + airline + "] rect").attr("width", x_scale(airline_counts.get(airline) || 0));
-	        d3.select("#airline_bar_chart [data-airline=" + airline + "] .airlineCount").text(airline_counts.get(airline) || 0).attr("x", 200 + x_scale(airline_counts.get(airline) || 0) + 10);
+	        d3.select("#airline_bar_chart [data-airline='" + airline + "'] rect").attr("width", x_scale(airline_counts.get(airline) || 0));
+	        d3.select("#airline_bar_chart [data-airline='" + airline + "'] .airlineCount").text(airline_counts.get(airline) || 0).attr("x", 200 + x_scale(airline_counts.get(airline) || 0) + 10);
 	    });
 	}
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -585,5 +586,5 @@
 	    };
 	}
 
-/***/ }
+/***/ })
 /******/ ]);
